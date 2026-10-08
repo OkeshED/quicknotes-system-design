@@ -4,6 +4,13 @@ const loadButton = document.getElementById("load-btn");
 const status = document.getElementById("status");
 const notesList = document.getElementById("notes-list");
 
+const noteForm = document.getElementById("note-form");
+const titleInput = document.getElementById("title-input");
+const bodyInput = document.getElementById("body-input");
+const submitButton = document.getElementById("submit-btn");
+
+let notes = [];
+
 async function request(url, options = {}) {
     const response = await fetch(url, options);
 
@@ -19,17 +26,17 @@ function setStatus(message, type = "") {
     status.className = type ? `status-${type}` : "";
 }
 
-function renderNotes(notes) {
+function renderNotes(list) {
     notesList.innerHTML = "";
 
-    if (notes.length === 0) {
+    if (list.length === 0) {
         const emptyMessage = document.createElement("li");
         emptyMessage.textContent = "No notes available.";
         notesList.appendChild(emptyMessage);
         return;
     }
 
-    notes.forEach(function (note) {
+    list.forEach(function (note) {
         const listItem = document.createElement("li");
         listItem.className = "note";
 
@@ -52,7 +59,7 @@ async function loadNotes() {
 
     try {
         const response = await request(`${API_URL}?_limit=10`);
-        const notes = await response.json();
+        notes = await response.json();
 
         renderNotes(notes);
 
@@ -75,4 +82,61 @@ async function loadNotes() {
     }
 }
 
+async function createNote(event) {
+    event.preventDefault();
+
+    const title = titleInput.value.trim();
+    const body = bodyInput.value.trim();
+
+    if (!title) {
+        setStatus("Title is required.", "error");
+        titleInput.focus();
+        return;
+    }
+
+    if (title.length > 100) {
+        setStatus("Title must be 100 characters or fewer.", "error");
+        titleInput.focus();
+        return;
+    }
+
+    submitButton.disabled = true;
+    setStatus("Creating note...");
+
+    try {
+        const response = await request(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: title,
+                body: body,
+                userId: 1
+            })
+        });
+
+        const newNote = await response.json();
+
+        notes.unshift(newNote);
+        renderNotes(notes);
+
+        setStatus(
+            `Note created (status ${response.status}, id ${newNote.id}).`,
+            "success"
+        );
+
+        noteForm.reset();
+    } catch (error) {
+        console.error(error);
+        setStatus(
+            "Could not create the note. Please try again.",
+            "error"
+        );
+    } finally {
+        submitButton.disabled = false;
+    }
+}
+
 loadButton.addEventListener("click", loadNotes);
+noteForm.addEventListener("submit", createNote);

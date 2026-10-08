@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    padding: 20px;
+    background: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+button {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+#status {
+    min-height: 20px;
+    padding: 10px;
+}
+
+.status-success {
+    color: green;
+    background: #eaf7ea;
+}
+
+.status-error {
+    color: red;
+    background: #fdeaea;
+}
+
+.note {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.note h3 {
+    margin-top: 0;
+}
+
+.delete-btn {
+    margin-top: 10px;
+}
